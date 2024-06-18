@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Account;
 use App\Models\User;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -12,12 +13,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('accounts', function (Blueprint $table) {
             $table->id();
-            $table->string(User::COL_FIRST_NAME, 20);
-            $table->string(User::COL_LAST_NAME, 200);
-            $table->string(User::COL_NATIONAL_CODE, 10)->unique();
-            $table->string(User::COL_MOBILE, 11)->unique();
+            $table->string(Account::COL_ACCOUNT_NUMBER, 50);
+            $table->foreignId(Account::COL_USER_ID)->constrained('users')->onDelete('cascade');
+            $table->string(Account::COL_BALANCE, 15)->default(0);
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('accounts');
     }
 };

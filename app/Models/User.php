@@ -4,12 +4,13 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, SoftDeletes;
 
     /**
      * The attributes that are mass assignable.
@@ -23,36 +24,25 @@ class User extends Authenticatable
     const COL_LAST_NAME = 'last_name';
     const COL_NATIONAL_CODE = 'national_code';
     const COL_MOBILE = 'mobile';
-    const COL_PASOWRD = 'password';
 
     protected $fillable = [
         self::COL_FIRST_NAME,
         self::COL_LAST_NAME,
         self::COL_NATIONAL_CODE,
         self::COL_MOBILE,
-        self::COL_PASOWRD
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
-    protected $hidden = [
-        'password',
-        'remember_token',
-    ];
-
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    public function accounts()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->hasMany(
+            Account::class,
+            Account::COL_USER_ID,
+            self::COL_ID
+        );
+    }
+
+    public function transactions()
+    {
+        return $this->hasManyThrough(Transaction::class, Account::class,Account::COL_USER_ID,Transaction::COL_SOURCE_CARD_ID);
     }
 }

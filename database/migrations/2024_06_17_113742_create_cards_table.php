@@ -1,6 +1,7 @@
 <?php
 
-use App\Models\User;
+use App\Models\Account;
+use App\Models\Card;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,12 +13,10 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
+        Schema::create('cards', function (Blueprint $table) {
             $table->id();
-            $table->string(User::COL_FIRST_NAME, 20);
-            $table->string(User::COL_LAST_NAME, 200);
-            $table->string(User::COL_NATIONAL_CODE, 10)->unique();
-            $table->string(User::COL_MOBILE, 11)->unique();
+            $table->string(Card::COL_CARD_NUMBER, 16)->unique();
+            $table->foreignId(Card::COL_ACCOUNT_ID)->constrained('accounts')->onDelete('cascade');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('users');
+        Schema::dropIfExists('cards');
     }
 };
